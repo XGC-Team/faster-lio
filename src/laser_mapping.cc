@@ -67,6 +67,7 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     nh.param<bool>("publish/scan_effect_pub_en", scan_effect_pub_en_, false);
     nh.param<std::string>("publish/tf_imu_frame", tf_imu_frame_, "body");
     nh.param<std::string>("publish/tf_world_frame", tf_world_frame_, "camera_init");
+    nh.param<float>("publish/viz_z_min", viz_z_min_, -1e3f);
 
     nh.param<int>("max_iteration", options::NUM_MAX_ITERATIONS, 4);
     nh.param<float>("esti_plane_threshold", options::ESTI_PLANE_THRESHOLD, 0.1);
@@ -166,6 +167,9 @@ bool LaserMapping::LoadParamsFromYAML(const std::string &yaml_file) {
         scan_effect_pub_en_ = yaml["publish"]["scan_effect_pub_en"].as<bool>();
         tf_imu_frame_ = yaml["publish"]["tf_imu_frame"].as<std::string>("body");
         tf_world_frame_ = yaml["publish"]["tf_world_frame"].as<std::string>("camera_init");
+        if (yaml["publish"]["viz_z_min"]) {
+            viz_z_min_ = yaml["publish"]["viz_z_min"].as<float>();
+        }
         path_save_en_ = yaml["path_save_en"].as<bool>();
 
         options::NUM_MAX_ITERATIONS = yaml["max_iteration"].as<int>();
@@ -757,8 +761,16 @@ void LaserMapping::PublishFrameWorld() {
     }
 
     if (run_in_offline_ == false && scan_pub_en_) {
+        // Estimator still used the full scan. This clip is display-only.
+        PointCloudType laserCloudViz;
+        laserCloudViz.reserve(laserCloudWorld->size());
+        for (const auto &pt : laserCloudWorld->points) {
+            if (pt.z >= viz_z_min_) {
+                laserCloudViz.push_back(pt);
+            }
+        }
         sensor_msgs::PointCloud2 laserCloudmsg;
-        pcl::toROSMsg(*laserCloudWorld, laserCloudmsg);
+        pcl::toROSMsg(laserCloudViz, laserCloudmsg);
         laserCloudmsg.header.stamp = ros::Time().fromSec(lidar_end_time_);
         laserCloudmsg.header.frame_id = tf_world_frame_;
         pub_laser_cloud_world_.publish(laserCloudmsg);

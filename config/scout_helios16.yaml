@@ -38,6 +38,8 @@ publish:
   scan_effect_pub_en: false
   dense_publish_en: true
   scan_bodyframe_pub_en: true
+  # Display only. LIO still uses the floor as a plane. camera_init Z is up.
+  viz_z_min: 0.15
 
 path_save_en: false
 

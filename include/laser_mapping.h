@@ -166,6 +166,7 @@ class LaserMapping {
     bool runtime_pos_log_ = true;
     int pcd_save_interval_ = -1;
     bool path_save_en_ = false;
+    float viz_z_min_ = -1e3f;  // drop world-z below this in /cloud_registered only
     std::string dataset_;
 
     PointCloudType::Ptr pcl_wait_save_{new PointCloudType()};  // debug save
