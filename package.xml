@@ -39,6 +39,8 @@
     <run_depend>pcl_ros</run_depend>
     <run_depend>message_runtime</run_depend>
     <run_depend>libgoogle-glog-dev</run_depend>
+    <run_depend>libgflags-dev</run_depend>
+    <run_depend>libyaml-cpp-dev</run_depend>
 
     <test_depend>rostest</test_depend>
     <test_depend>rosbag</test_depend>
