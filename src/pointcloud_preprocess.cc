@@ -1,5 +1,6 @@
 #include "pointcloud_preprocess.h"
 
+#include <cmath>
 #include <glog/logging.h>
 #include <execution>
 
@@ -217,15 +218,6 @@ void PointCloudPreprocess::HesaiHandler(const sensor_msgs::PointCloud2::ConstPtr
         given_offset_time_ = true;
     } else {
         given_offset_time_ = false;
-        double yaw_first = atan2(pl_orig.points[0].y, pl_orig.points[0].x) * 57.29578;
-        double yaw_end = yaw_first;
-        int layer_first = pl_orig.points[0].ring;
-        for (uint i = plsize - 1; i > 0; i--) {
-            if (pl_orig.points[i].ring == layer_first) {
-                yaw_end = atan2(pl_orig.points[i].y, pl_orig.points[i].x) * 57.29578;
-                break;
-            }
-        }
     }
 
     double time_head = pl_orig.points[0].timestamp;
@@ -242,8 +234,18 @@ void PointCloudPreprocess::HesaiHandler(const sensor_msgs::PointCloud2::ConstPtr
         added_pt.intensity = pl_orig.points[i].intensity;
         added_pt.curvature = (pl_orig.points[i].timestamp - time_head) * 1000.f;  // curvature unit: ms
 
+        // Helios XYZI bags keep invalid returns as NaN. Feeding those into
+        // atan2 poisons the FAST-LIO/Faster-LIO yaw time model for the whole
+        // ring (Bai et al., RA-L 2022). Skip them before undistortion.
+        if (!std::isfinite(added_pt.x) || !std::isfinite(added_pt.y) || !std::isfinite(added_pt.z)) {
+            continue;
+        }
+
         if (!given_offset_time_) {
             int layer = pl_orig.points[i].ring;
+            if (layer < 0 || layer >= num_scans_) {
+                continue;
+            }
             double yaw_angle = atan2(added_pt.y, added_pt.x) * 57.2957;
 
             if (is_first[layer]) {

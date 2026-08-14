@@ -1,5 +1,6 @@
 #include <tf/transform_broadcaster.h>
 #include <yaml-cpp/yaml.h>
+#include <cmath>
 #include <execution>
 #include <fstream>
 
@@ -467,13 +468,21 @@ bool LaserMapping::SyncPackages() {
         if (measures_.lidar_->points.size() <= 1) {
             LOG(WARNING) << "Too few input point cloud!";
             lidar_end_time_ = measures_.lidar_bag_time_ + lidar_mean_scantime_;
-        } else if (measures_.lidar_->points.back().curvature / double(1000) < 0.5 * lidar_mean_scantime_) {
+        } else if (!std::isfinite(measures_.lidar_->points.back().curvature) ||
+                   measures_.lidar_->points.back().curvature / double(1000) < 0.5 * lidar_mean_scantime_) {
             lidar_end_time_ = measures_.lidar_bag_time_ + lidar_mean_scantime_;
         } else {
             scan_num_++;
             lidar_end_time_ = measures_.lidar_bag_time_ + measures_.lidar_->points.back().curvature / double(1000);
             lidar_mean_scantime_ +=
                 (measures_.lidar_->points.back().curvature / double(1000) - lidar_mean_scantime_) / scan_num_;
+        }
+        if (!std::isfinite(lidar_end_time_)) {
+            LOG(WARNING) << "non-finite lidar_end_time, skip this scan";
+            lidar_buffer_.pop_front();
+            time_buffer_.pop_front();
+            lidar_pushed_ = false;
+            return false;
         }
 
         measures_.lidar_end_time_ = lidar_end_time_;
