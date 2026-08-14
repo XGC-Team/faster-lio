@@ -5,9 +5,10 @@
 
   <param name="runtime_pos_log_enable" type="bool" value="true" />
   <node pkg="faster_lio" type="run_mapping_online" name="laserMapping" output="screen" />
-  <!-- Visualize sim-URDF lidar pose on the IMU body (z=0.187). -->
-  <node pkg="tf" type="static_transform_publisher" name="body_to_rslidar"
-        args="0 0 0.187 0 0 0 body rslidar 50" />
+  <include file="$(find faster_lio)/launch/scout_in_lio_tf.launch">
+    <arg name="load_description" value="true"/>
+    <arg name="imu_z" value="0.12"/>
+  </include>
 
   <group if="$(arg rviz)">
     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"

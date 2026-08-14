@@ -8,6 +8,7 @@ Panels:
         - /MappedCloud1
         - /Odometry1
         - /Path1
+        - /Scout1
         - /Camera1
     Splitter Ratio: 0.5
   - Class: rviz/Views
@@ -100,6 +101,22 @@ Visualization Manager:
       Topic: /path
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+      Name: Scout
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
     - Alpha: 1
       Class: rviz/Axes
       Enabled: true

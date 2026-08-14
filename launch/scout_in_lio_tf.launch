@@ -1,0 +1,21 @@
+<launch>
+  <!-- Hang the Scout URDF on the Faster-LIO TF tree.
+       camera_init --LIO--> body (IMU) --static--> base_link --robot_state_publisher--> rest.
+       Do not republish pose as a topic. base_link may have only one parent:
+       disable Gazebo odom->base_link TF (gazebo_model_odom publish_tf:=false). -->
+  <arg name="load_description" default="false"/>
+  <arg name="imu_z" default="0.12"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="body_to_base_link"
+        args="0 0 -$(arg imu_z) 0 0 0 body base_link 50"/>
+
+  <group if="$(arg load_description)">
+    <include file="$(find gazebo_sim_scout)/launch/mini_description.launch">
+      <arg name="enable_rslidar" value="true"/>
+    </include>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="scout_state_publisher"/>
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="scout_joint_state_publisher">
+      <param name="use_gui" value="false"/>
+    </node>
+  </group>
+</launch>
