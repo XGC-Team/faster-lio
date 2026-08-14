@@ -24,10 +24,11 @@ mapping:
   b_gyr_cov: 0.0001
   fov_degree: 180
   det_range: 100.0
-  # Do not estimate extrinsics online. That spins offset_R_L_I and makes the
-  # IMU arrow disagree with the cloud. Fixed values are the vehicle launch
-  # guess: IMU at base, Helios 0.307 m up, same ROS axes (X fwd, Y left, Z up).
-  # Bag check: chassis yaw rate corr(IMU gz)=0.97, gravity on IMU +Z.
+  # Vehicle-geometry prior: IMU and Helios share ROS axes (X fwd, Y left,
+  # Z up), lidar 0.307 m above base. Planar bags cannot identify yaw: ω is
+  # almost all ω_z, so Wahba's R_z is unobservable and a fitted 24 deg
+  # smears the corridor around Z. Keep identity until a figure-8 / pitch
+  # bag exists. Do not estimate online.
   extrinsic_est_en: false
   extrinsic_T: [0.0, 0.0, 0.307]
   extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
