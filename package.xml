@@ -26,6 +26,8 @@
     <build_depend>pcl_ros</build_depend>
     <build_depend>message_generation</build_depend>
     <build_depend>libgoogle-glog-dev</build_depend>
+    <build_depend>libgflags-dev</build_depend>
+    <build_depend>libyaml-cpp-dev</build_depend>
 
     <run_depend>geometry_msgs</run_depend>
     <run_depend>nav_msgs</run_depend>

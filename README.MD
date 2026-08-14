@@ -1,5 +1,15 @@
 ## FasterLIO
 
+XGC2 development fork of [gaoxiang12/faster-lio](https://github.com/gaoxiang12/faster-lio).
+Secondary development lives here (`lxk36/faster-lio`). The ROS1 product copy is
+`products/ros1/perception/slam/faster_lio` in `lxk36/xgc2-slam`.
+
+Scout Mini + RSHELIOS 16 launch:
+
+```bash
+roslaunch faster_lio mapping_scout_helios16.launch
+```
+
 This is the code repository of FasterLIO by Chunge Bai, Tao Xiang, Yajie Chen, Haoqian Wang, Fang Zhang and Xiang Gao.
 
 Faster-LIO is a light-weight Lidar-inertial odometry for lidar pose tracking and point cloud mapping. It is developed on

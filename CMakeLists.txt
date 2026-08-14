@@ -31,3 +31,8 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(app)
+
+install(DIRECTORY config launch rviz_cfg
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        )
+
