@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - "*-*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  catkin:
+    name: catkin_make (noetic)
+    runs-on: ubuntu-latest
+    container: ros:noetic-ros-base-focal
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            libgflags-dev \
+            libgoogle-glog-dev \
+            libpcl-dev \
+            libtbb-dev \
+            libyaml-cpp-dev \
+            python3-catkin-tools \
+            ros-noetic-eigen-conversions \
+            ros-noetic-pcl-conversions \
+            ros-noetic-pcl-ros \
+            ros-noetic-tf
+
+      - name: Build this package only
+        shell: bash
+        run: |
+          source /opt/ros/noetic/setup.bash
+          mkdir -p /tmp/ws/src
+          ln -s "$GITHUB_WORKSPACE" /tmp/ws/src/faster_lio
+          cd /tmp/ws
+          catkin_make -DCMAKE_BUILD_TYPE=Release -j"$(nproc)"

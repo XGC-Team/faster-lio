@@ -1,8 +1,16 @@
 ## FasterLIO
 
 XGC2 development fork of [gaoxiang12/faster-lio](https://github.com/gaoxiang12/faster-lio).
-Secondary development lives here (`XGC-Team/xgc2-faster-lio`). The ROS1 product copy is
-`products/ros1/perception/slam/faster_lio` in `xgc2-slam`.
+This repository lives under **XGC-Team**. CI here builds only this package.
+
+LIO is tied to one robot and one lidar. Vehicle work is a hyphenated
+`robot-sensor` branch, not a catch-all `main` dump:
+
+| Branch | Vehicle | Lidar |
+| --- | --- | --- |
+| `scout-helios16` | AgileX Scout Mini | RoboSense RSHELIOS 16 |
+
+`main` tracks upstream. Do not CI the `xgc2-slam` aggregator for this tree.
 
 Scout Mini + RSHELIOS 16 launch:
 
