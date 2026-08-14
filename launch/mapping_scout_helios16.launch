@@ -5,6 +5,9 @@
 
   <param name="runtime_pos_log_enable" type="bool" value="true" />
   <node pkg="faster_lio" type="run_mapping_online" name="laserMapping" output="screen" />
+  <!-- Visualize the assumed lidar frame on the IMU body. -->
+  <node pkg="tf" type="static_transform_publisher" name="body_to_rslidar"
+        args="0 0 0.307 0 0 0 body rslidar 50" />
 
   <group if="$(arg rviz)">
     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"
