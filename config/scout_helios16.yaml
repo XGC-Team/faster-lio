@@ -24,13 +24,12 @@ mapping:
   b_gyr_cov: 0.0001
   fov_degree: 180
   det_range: 100.0
-  # Vehicle-geometry prior: IMU and Helios share ROS axes (X fwd, Y left,
-  # Z up), lidar 0.307 m above base. Planar bags cannot identify yaw: ω is
-  # almost all ω_z, so Wahba's R_z is unobservable and a fitted 24 deg
-  # smears the corridor around Z. Keep identity until a figure-8 / pitch
-  # bag exists. Do not estimate online.
+  # From Scout Gazebo URDF (imu_link z=0.12, rslidar z=0.307, same axes):
+  # p_imu = I * p_lidar + (0,0,0.187). Offline identify on a 61 s sim bag
+  # kept this prior: planar motion does not observe yaw or the lever arm.
+  # This is a sim-defined trial on the real bag, not a vehicle calibration.
   extrinsic_est_en: false
-  extrinsic_T: [0.0, 0.0, 0.307]
+  extrinsic_T: [0.0, 0.0, 0.187]
   extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
 
 publish:
