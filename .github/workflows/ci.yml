@@ -12,30 +12,36 @@ jobs:
   catkin:
     name: catkin_make (noetic)
     runs-on: ubuntu-latest
-    container: ros:noetic-ros-base-focal
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install build dependencies
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            libgflags-dev \
-            libgoogle-glog-dev \
-            libpcl-dev \
-            libtbb-dev \
-            libyaml-cpp-dev \
-            python3-catkin-tools \
-            ros-noetic-eigen-conversions \
-            ros-noetic-pcl-conversions \
-            ros-noetic-pcl-ros \
-            ros-noetic-tf
 
       - name: Build this package only
         shell: bash
         run: |
-          source /opt/ros/noetic/setup.bash
-          mkdir -p /tmp/ws/src
-          ln -s "$GITHUB_WORKSPACE" /tmp/ws/src/faster_lio
-          cd /tmp/ws
-          catkin_make -DCMAKE_BUILD_TYPE=Release -j"$(nproc)"
+          set -euo pipefail
+          image=ghcr.io/xgc-team/xgc2-images/xgc2-build-focal-full-noetic:1.0.0
+          docker pull "${image}"
+          docker run --rm --network none \
+            -v "$GITHUB_WORKSPACE:/workspace/faster_lio:ro" \
+            -v "$RUNNER_TEMP/faster-lio:/workspace/work" \
+            "${image}" \
+            bash -lc '
+              set -euo pipefail
+              for pkg in \
+                libgflags-dev libgoogle-glog-dev libpcl-dev libtbb-dev libyaml-cpp-dev \
+                ros-noetic-eigen-conversions ros-noetic-pcl-conversions \
+                ros-noetic-pcl-ros ros-noetic-tf
+              do
+                if ! dpkg -s "${pkg}" >/dev/null 2>&1; then
+                  echo "image is missing ${pkg}; use xgc2-build-focal-full-noetic" >&2
+                  exit 1
+                fi
+              done
+              set +u
+              source /opt/ros/noetic/setup.bash
+              set -u
+              mkdir -p /workspace/work/src
+              ln -s /workspace/faster_lio /workspace/work/src/faster_lio
+              cd /workspace/work
+              catkin_make -DCMAKE_BUILD_TYPE=Release -j"$(nproc)"
+            '
