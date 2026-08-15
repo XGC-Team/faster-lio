@@ -8,6 +8,11 @@
     <arg name="load_description" value="false"/>
     <arg name="imu_z" value="0.12"/>
   </include>
+  <!-- Display-only ground removal. LIO still consumes the full cloud. -->
+  <node name="ground_segmentation" pkg="patchworkpp" type="demo" output="screen">
+    <rosparam command="load" file="$(find faster_lio)/config/patchworkpp_scout.yaml"/>
+    <param name="cloud_topic" value="/cloud_registered_body"/>
+  </node>
   <group if="$(arg rviz)">
     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"
           args="-d $(find faster_lio)/config/rviz/scout_helios16.rviz" />
