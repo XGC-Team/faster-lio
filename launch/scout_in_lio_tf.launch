@@ -1,8 +1,8 @@
 <launch>
-  <!-- Hang the Scout URDF on the Faster-LIO TF tree.
-       camera_init --LIO--> body (IMU) --static--> base_link --robot_state_publisher--> rest.
+  <!-- Hang the Scout URDF on the Faster-LIO TF tree:
+       camera_init to body from LIO, body to base_link static, then robot_state_publisher.
        Do not republish pose as a topic. base_link may have only one parent:
-       disable Gazebo odom->base_link TF (gazebo_model_odom publish_tf:=false). -->
+       disable Gazebo odom to base_link TF (gazebo_model_odom publish_tf:=false). -->
   <arg name="load_description" default="false"/>
   <arg name="imu_z" default="0.12"/>
 
