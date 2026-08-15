@@ -1,0 +1,46 @@
+<launch>
+  <!-- Joint verification: Faster-LIO pose + 200 Hz IMU -> planar estimator -> NMPC.
+       Pose source is switchable: pose_source:=lio|vrpn.
+       Saturations match config/scout_motion_limits.yaml (chassis-bound). -->
+  <arg name="ns" default="ugv1"/>
+  <arg name="rviz" default="true"/>
+  <arg name="pose_source" default="lio"/>
+  <arg name="imu_topic" default="/$(arg ns)/imu/data_raw"/>
+  <arg name="pose_topic" default="/Odometry"/>
+  <arg name="start_tracking" default="false"/>
+  <arg name="min_linear_speed" default="-0.5"/>
+  <arg name="max_linear_speed" default="1.5"/>
+  <arg name="max_angular_speed" default="0.5235"/>
+  <arg name="max_linear_acceleration" default="2.0"/>
+  <arg name="line_speed" default="0.6"/>
+
+  <include file="$(find faster_lio)/launch/mapping_scout_helios16_sim.launch">
+    <arg name="rviz" value="$(arg rviz)"/>
+  </include>
+
+  <include file="$(find estimator_vrpn_ugv_state)/launch/vrpn_ugv_state_estimator.launch">
+    <arg name="ns" value="$(arg ns)"/>
+    <arg name="pose_source" value="$(arg pose_source)"/>
+    <arg name="imu_topic" value="$(arg imu_topic)"/>
+    <arg name="pose_topic" value="$(arg pose_topic)"/>
+  </include>
+
+  <include file="$(find unicycle_ugv_controller)/launch/ugv_unicycle_nmpc_controller.launch">
+    <arg name="ns" value="$(arg ns)"/>
+    <arg name="state_source" value="state_estimator"/>
+    <arg name="cmd_vel_topic" value="cmd_vel"/>
+    <arg name="auto_start_tracking" value="$(arg start_tracking)"/>
+    <arg name="min_linear_speed" value="$(arg min_linear_speed)"/>
+    <arg name="max_linear_speed" value="$(arg max_linear_speed)"/>
+    <arg name="max_angular_speed" value="$(arg max_angular_speed)"/>
+    <arg name="max_linear_acceleration" value="$(arg max_linear_acceleration)"/>
+  </include>
+
+  <include file="$(find unicycle_reference_trajectory)/launch/ugv_unicycle_reference_trajectory.launch">
+    <arg name="ns" value="$(arg ns)"/>
+    <arg name="max_velocity" value="$(arg max_linear_speed)"/>
+    <arg name="max_acceleration" value="$(arg max_linear_acceleration)"/>
+    <arg name="max_yaw_rate" value="$(arg max_angular_speed)"/>
+    <arg name="default_analytic_line_speed" value="$(arg line_speed)"/>
+  </include>
+</launch>

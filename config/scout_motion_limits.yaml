@@ -1,0 +1,10 @@
+# Binding motion limits for Scout Mini on the tuned Gazebo / chassis stack.
+# Intersection of gazebo_sim_scout accurate.launch and unicycle NMPC:
+#   chassis max_linear_speed 1.5, max_angular_speed 0.5235
+#   NMPC product defaults 3.0 / 2.5 are wider; this file is the shared cap.
+# Tracking, exploration, and NMPC must all load these same numbers.
+min_linear_speed: -0.5
+max_linear_speed: 1.5
+max_angular_speed: 0.5235
+max_linear_acceleration: 2.0
+line_speed: 0.6
